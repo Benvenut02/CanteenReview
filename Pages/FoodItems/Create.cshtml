@@ -1,0 +1,132 @@
+@page
+@model CanteenReview.Pages.FoodItems.CreateModel
+@{
+    ViewData["Title"] = "Add Food Item";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">🍔 Add New Canteen Item</h2>
+                <p class="text-muted mb-0">Enter food details to publish it on the canteen menu.</p>
+            </div>
+            <a asp-page="/Index" class="btn btn-outline-secondary rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Back to Menu
+            </a>
+        </div>
+
+        <div class="custom-card">
+            <form method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 mb-4" role="alert"></div>
+
+                <div class="mb-3">
+                    <label asp-for="FoodItem.Name" class="form-label"></label>
+                    <input asp-for="FoodItem.Name" class="form-control" placeholder="e.g. Cheese Garlic Toast" />
+                    <span asp-validation-for="FoodItem.Name" class="text-danger small ms-1"></span>
+                </div>
+
+                <div class="row mb-3 g-3">
+                    <div class="col-md-6">
+                        <label asp-for="FoodItem.Price" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light fw-bold">₹</span>
+                            <input asp-for="FoodItem.Price" class="form-control" placeholder="45.00" type="number" step="0.50" />
+                        </div>
+                        <span asp-validation-for="FoodItem.Price" class="text-danger small ms-1"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="FoodItem.Category" class="form-label"></label>
+                        <select asp-for="FoodItem.Category" class="form-select">
+                            <option value="Snacks">Snacks 🥪</option>
+                            <option value="Beverages">Beverages ☕</option>
+                            <option value="Meals">Meals 🍲</option>
+                            <option value="Desserts">Desserts 🍦</option>
+                            <option value="Combos">Combos 🍱</option>
+                        </select>
+                        <span asp-validation-for="FoodItem.Category" class="text-danger small ms-1"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="FoodItem.Description" class="form-label"></label>
+                    <textarea asp-for="FoodItem.Description" class="form-control" rows="3" placeholder="Brief description of ingredients, taste, or portion size..."></textarea>
+                    <span asp-validation-for="FoodItem.Description" class="text-danger small ms-1"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Food Image / Emoji</label>
+                    
+                    <div class="card p-3 bg-light border-0 mb-2">
+                        <div class="mb-3">
+                            <label asp-for="ImageFile" class="form-label small text-muted">Upload Image File (JPG, PNG, WebP, GIF)</label>
+                            <input asp-for="ImageFile" type="file" accept="image/*" class="form-control" id="imageFileInput" onchange="previewSelectedFile(this)" />
+                            <span asp-validation-for="ImageFile" class="text-danger small d-block ms-1"></span>
+                        </div>
+
+                        <div class="text-center text-muted small fw-semibold my-1">- OR -</div>
+
+                        <div>
+                            <label asp-for="FoodItem.ImageUrl" class="form-label small text-muted">Image Web URL or Emoji</label>
+                            <input asp-for="FoodItem.ImageUrl" class="form-control" id="imageUrlInput" placeholder="e.g. 🍕 or https://example.com/photo.jpg" oninput="previewUrlOrEmoji(this.value)" />
+                            <span asp-validation-for="FoodItem.ImageUrl" class="text-danger small d-block ms-1"></span>
+                        </div>
+                    </div>
+
+                    <!-- Live Image/Emoji Preview -->
+                    <div class="text-center mt-3 p-3 bg-white border rounded-3 d-none" id="previewBox">
+                        <span class="text-muted small d-block mb-2">Live Preview:</span>
+                        <div id="previewContent"></div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-end gap-2 border-top pt-3">
+                    <a asp-page="/Index" class="btn btn-light border px-4">Cancel</a>
+                    <button type="submit" class="btn btn-primary-custom px-4">
+                        <i class="bi bi-check-lg me-1"></i> Save Food Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function previewSelectedFile(input) {
+            const previewBox = document.getElementById('previewBox');
+            const previewContent = document.getElementById('previewContent');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewContent.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" style="max-height: 120px; object-fit: cover;" />`;
+                    previewBox.classList.remove('d-none');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function previewUrlOrEmoji(value) {
+            const fileInput = document.getElementById('imageFileInput');
+            if (fileInput.files && fileInput.files.length > 0) return; // File takes priority
+
+            const previewBox = document.getElementById('previewBox');
+            const previewContent = document.getElementById('previewContent');
+
+            if (!value.trim()) {
+                previewBox.classList.add('d-none');
+                return;
+            }
+
+            const isUrl = value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/');
+            if (isUrl) {
+                previewContent.innerHTML = `<img src="${value}" class="img-thumbnail" style="max-height: 120px; object-fit: cover;" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<span class=\\'fs-1\\'>🍲</span>';" />`;
+            } else {
+                previewContent.innerHTML = `<span class="fs-1">${value}</span>`;
+            }
+            previewBox.classList.remove('d-none');
+        }
+    </script>
+}

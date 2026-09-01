@@ -1,0 +1,189 @@
+@page "{id:int}"
+@model CanteenReview.Pages.FoodItems.DetailsModel
+@{
+    ViewData["Title"] = Model.FoodItem.Name + " - Details & Reviews";
+    var reviews = Model.FoodItem.Reviews?.OrderByDescending(r => r.CreatedAt).ToList() ?? new List<CanteenReview.Models.Review>();
+    var totalReviews = reviews.Count;
+    var avgRating = Model.FoodItem.AverageRating;
+}
+
+<div class="mb-3">
+    <a asp-page="/Index" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+        <i class="bi bi-arrow-left me-1"></i> Back to Food Menu
+    </a>
+</div>
+
+<!-- Food Details Header Card -->
+<div class="custom-card mb-4 p-0 overflow-hidden">
+    <div class="row g-0 align-items-center">
+        <div class="col-md-4 text-center p-4 bg-light-orange" style="background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);">
+            @if (Model.FoodItem.IsImageFileOrUrl)
+            {
+                <div class="mb-3">
+                    <img src="@Model.FoodItem.ImageUrl" alt="@Model.FoodItem.Name" class="food-details-img drop-shadow" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<div class=\'display-1 drop-shadow mb-2\'>🍲</div>';" />
+                </div>
+            }
+            else
+            {
+                <div class="display-1 drop-shadow mb-2">
+                    @(string.IsNullOrWhiteSpace(Model.FoodItem.ImageUrl) ? "🍲" : Model.FoodItem.ImageUrl)
+                </div>
+            }
+            <span class="badge bg-dark px-3 py-2 rounded-pill text-warning fw-bold">₹@Model.FoodItem.Price.ToString("0.00")</span>
+        </div>
+        <div class="col-md-8 p-4">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="category-badge position-static">@(string.IsNullOrEmpty(Model.FoodItem.Category) ? "Canteen Item" : Model.FoodItem.Category)</span>
+                <div class="d-flex gap-2">
+                    <a asp-page="/FoodItems/Edit" asp-route-id="@Model.FoodItem.Id" class="btn btn-sm btn-outline-primary rounded-pill">
+                        <i class="bi bi-pencil me-1"></i> Edit Item
+                    </a>
+                    <a asp-page="/FoodItems/Delete" asp-route-id="@Model.FoodItem.Id" class="btn btn-sm btn-outline-danger rounded-pill">
+                        <i class="bi bi-trash me-1"></i> Delete
+                    </a>
+                </div>
+            </div>
+            <h1 class="fw-bold mb-2">@Model.FoodItem.Name</h1>
+            <p class="text-muted mb-3">@(string.IsNullOrWhiteSpace(Model.FoodItem.Description) ? "No description available." : Model.FoodItem.Description)</p>
+            
+            <div class="d-flex align-items-center gap-3">
+                <div class="rating-pill fs-5">★ @avgRating.ToString("0.0")</div>
+                <div class="star-rating fs-5">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= Math.Round(avgRating))
+                        {
+                            <i class="bi bi-star-fill"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-star star-empty"></i>
+                        }
+                    }
+                </div>
+                <span class="text-muted fw-semibold">(@totalReviews @(totalReviews == 1 ? "student review" : "student reviews"))</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Add Student Review Form -->
+    <div class="col-lg-5">
+        <div class="custom-card">
+            <h3 class="fw-bold mb-1">⭐ Leave a Review</h3>
+            <p class="text-muted small mb-4">Share your honest feedback about @Model.FoodItem.Name.</p>
+
+            <form method="post" asp-page-handler="AddReview" asp-route-id="@Model.FoodItem.Id">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 mb-3" role="alert"></div>
+
+                <div class="mb-3">
+                    <label asp-for="NewReview.StudentName" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                        <input asp-for="NewReview.StudentName" class="form-control" placeholder="e.g. Rahul Sharma" />
+                    </div>
+                    <span asp-validation-for="NewReview.StudentName" class="text-danger small ms-1"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label d-block">Rating (1 to 5 Stars)</label>
+                    <div class="star-picker mb-1">
+                        <input type="radio" asp-for="NewReview.Rating" value="5" id="star5" />
+                        <label for="star5" title="5 Stars - Outstanding">★</label>
+                        
+                        <input type="radio" asp-for="NewReview.Rating" value="4" id="star4" />
+                        <label for="star4" title="4 Stars - Very Good">★</label>
+
+                        <input type="radio" asp-for="NewReview.Rating" value="3" id="star3" />
+                        <label for="star3" title="3 Stars - Average">★</label>
+
+                        <input type="radio" asp-for="NewReview.Rating" value="2" id="star2" />
+                        <label for="star2" title="2 Stars - Poor">★</label>
+
+                        <input type="radio" asp-for="NewReview.Rating" value="1" id="star1" />
+                        <label for="star1" title="1 Star - Terrible">★</label>
+                    </div>
+                    <span asp-validation-for="NewReview.Rating" class="text-danger small ms-1 d-block"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="NewReview.Comment" class="form-label"></label>
+                    <textarea asp-for="NewReview.Comment" class="form-control" rows="3" placeholder="How was the taste, freshness, and portion size?"></textarea>
+                    <span asp-validation-for="NewReview.Comment" class="text-danger small ms-1"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary-custom w-100 py-2">
+                    <i class="bi bi-send-fill me-1"></i> Submit Review
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Column: Student Reviews List -->
+    <div class="col-lg-7">
+        <div class="custom-card">
+            <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+                <h3 class="fw-bold mb-0">💬 Student Feedback (@totalReviews)</h3>
+                <span class="badge bg-light text-dark border">Sorted by Recent</span>
+            </div>
+
+            @if (!reviews.Any())
+            {
+                <div class="text-center py-4">
+                    <div class="fs-1 text-muted mb-2">✍️</div>
+                    <h5>No reviews yet for this item!</h5>
+                    <p class="text-muted small">Be the first student to rate and review @Model.FoodItem.Name.</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var review in reviews)
+                {
+                    <div class="review-card">
+                        <div class="d-flex align-items-start justify-content-between mb-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="review-avatar">
+                                    @(string.IsNullOrEmpty(review.StudentName) ? "S" : review.StudentName.Substring(0, 1).ToUpper())
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-0">@review.StudentName</h6>
+                                    <span class="text-muted small">
+                                        <i class="bi bi-clock me-1"></i>@review.CreatedAt.ToString("MMM dd, yyyy • h:mm tt")
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="star-rating">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= review.Rating)
+                                        {
+                                            <i class="bi bi-star-fill"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-star star-empty"></i>
+                                        }
+                                    }
+                                </div>
+                                <form method="post" asp-page-handler="DeleteReview" class="d-inline ms-2">
+                                    <input type="hidden" name="reviewId" value="@review.Id" />
+                                    <input type="hidden" name="foodItemId" value="@Model.FoodItem.Id" />
+                                    <button type="submit" class="btn btn-link text-muted p-0 border-0" title="Delete Review" onclick="return confirm('Remove this review?');">
+                                        <i class="bi bi-x-circle text-danger opacity-75"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-dark ps-5">@review.Comment</p>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
