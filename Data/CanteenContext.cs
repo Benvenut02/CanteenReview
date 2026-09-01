@@ -14,9 +14,7 @@ namespace CanteenReview.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<FoodItem>()
-                .Property(f => f.Price)
-                .HasColumnType("decimal(18,2)");
+            // Price configuration handled by SQLite defaults
 
             modelBuilder.Entity<FoodItem>()
                 .HasMany(f => f.Reviews)

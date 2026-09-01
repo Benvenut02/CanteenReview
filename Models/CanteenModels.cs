@@ -18,7 +18,6 @@ namespace CanteenReview.Models
 
         [Required(ErrorMessage = "Price is required.")]
         [Range(0.01, 1000.00, ErrorMessage = "Price must be between 0.01 and 1000.")]
-        [Column(TypeName = "decimal(18, 2)")]
         [DataType(DataType.Currency)]
         public decimal Price { get; set; }
 

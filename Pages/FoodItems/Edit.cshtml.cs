@@ -47,6 +47,10 @@ namespace CanteenReview.Pages.FoodItems
 
         public async Task<IActionResult> OnPostAsync()
         {
+            // Remove validation for fields handled programmatically
+            ModelState.Remove("FoodItem.Reviews");
+            ModelState.Remove("FoodItem.ImageUrl");
+
             if (!ModelState.IsValid)
             {
                 return Page();

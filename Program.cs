@@ -8,7 +8,7 @@ builder.Services.AddRazorPages();
 
 // Register CanteenContext with SQL Server
 builder.Services.AddDbContext<CanteenContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
