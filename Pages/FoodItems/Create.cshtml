@@ -56,25 +56,18 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-bold">Food Image / Emoji</label>
+                    <label class="form-label fw-bold">Food Image</label>
+                    <input type="hidden" asp-for="FoodItem.ImageUrl" />
                     
                     <div class="card p-3 bg-light border-0 mb-2">
-                        <div class="mb-3">
-                            <label asp-for="ImageFile" class="form-label small text-muted">Upload Image File (JPG, PNG, WebP, GIF)</label>
+                        <div>
+                            <label asp-for="ImageFile" class="form-label small text-muted">Upload Image File (JPG, PNG, WebP, GIF, SVG)</label>
                             <input asp-for="ImageFile" type="file" accept="image/*" class="form-control" id="imageFileInput" onchange="previewSelectedFile(this)" />
                             <span asp-validation-for="ImageFile" class="text-danger small d-block ms-1"></span>
                         </div>
-
-                        <div class="text-center text-muted small fw-semibold my-1">- OR -</div>
-
-                        <div>
-                            <label asp-for="FoodItem.ImageUrl" class="form-label small text-muted">Image Web URL or Emoji</label>
-                            <input asp-for="FoodItem.ImageUrl" class="form-control" id="imageUrlInput" placeholder="e.g. 🍕 or https://example.com/photo.jpg" oninput="previewUrlOrEmoji(this.value)" />
-                            <span asp-validation-for="FoodItem.ImageUrl" class="text-danger small d-block ms-1"></span>
-                        </div>
                     </div>
 
-                    <!-- Live Image/Emoji Preview -->
+                    <!-- Live Image Preview -->
                     <div class="text-center mt-3 p-3 bg-white border rounded-3 d-none" id="previewBox">
                         <span class="text-muted small d-block mb-2">Live Preview:</span>
                         <div id="previewContent"></div>
@@ -105,28 +98,9 @@
                     previewBox.classList.remove('d-none');
                 };
                 reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function previewUrlOrEmoji(value) {
-            const fileInput = document.getElementById('imageFileInput');
-            if (fileInput.files && fileInput.files.length > 0) return; // File takes priority
-
-            const previewBox = document.getElementById('previewBox');
-            const previewContent = document.getElementById('previewContent');
-
-            if (!value.trim()) {
-                previewBox.classList.add('d-none');
-                return;
-            }
-
-            const isUrl = value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/');
-            if (isUrl) {
-                previewContent.innerHTML = `<img src="${value}" class="img-thumbnail" style="max-height: 120px; object-fit: cover;" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<span class=\\'fs-1\\'>🍲</span>';" />`;
             } else {
-                previewContent.innerHTML = `<span class="fs-1">${value}</span>`;
+                previewBox.classList.add('d-none');
             }
-            previewBox.classList.remove('d-none');
         }
     </script>
 }

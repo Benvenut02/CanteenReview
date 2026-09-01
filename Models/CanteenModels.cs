@@ -28,7 +28,7 @@ namespace CanteenReview.Models
         [StringLength(500)]
         public string Description { get; set; } = string.Empty;
 
-        [Display(Name = "Image URL or Emoji")]
+        [Display(Name = "Food Image")]
         public string ImageUrl { get; set; } = string.Empty;
 
         // Navigation property for reviews

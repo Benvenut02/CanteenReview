@@ -35,6 +35,8 @@ namespace CanteenReview.Pages.FoodItems
 
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("FoodItem.Reviews");
+
             if (!ModelState.IsValid)
             {
                 return Page();
