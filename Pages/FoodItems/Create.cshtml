@@ -8,10 +8,10 @@
     <div class="col-lg-7 col-md-9">
         <div class="d-flex align-items-center justify-content-between mb-4">
             <div>
-                <h2 class="fw-bold mb-1">🍔 Add New Canteen Item</h2>
-                <p class="text-muted mb-0">Enter food details to publish it on the canteen menu.</p>
+                <h3 class="fw-bold mb-1">Add New Food Item</h3>
+                <p class="text-muted mb-0 small">Publish a new food item on the canteen menu.</p>
             </div>
-            <a asp-page="/Index" class="btn btn-outline-secondary rounded-pill px-3">
+            <a asp-page="/Index" class="btn btn-light-custom px-3">
                 <i class="bi bi-arrow-left me-1"></i> Back to Menu
             </a>
         </div>
@@ -21,63 +21,61 @@
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 mb-4" role="alert"></div>
 
                 <div class="mb-3">
-                    <label asp-for="FoodItem.Name" class="form-label"></label>
+                    <label asp-for="FoodItem.Name" class="form-label">Food Item Name</label>
                     <input asp-for="FoodItem.Name" class="form-control" placeholder="e.g. Cheese Garlic Toast" />
                     <span asp-validation-for="FoodItem.Name" class="text-danger small ms-1"></span>
                 </div>
 
                 <div class="row mb-3 g-3">
                     <div class="col-md-6">
-                        <label asp-for="FoodItem.Price" class="form-label"></label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light fw-bold">₹</span>
+                        <label asp-for="FoodItem.Price" class="form-label">Price (₹)</label>
+                        <div class="input-group custom-input-group">
+                            <span class="input-group-text fw-bold">₹</span>
                             <input asp-for="FoodItem.Price" class="form-control" placeholder="45.00" type="number" step="0.50" />
                         </div>
                         <span asp-validation-for="FoodItem.Price" class="text-danger small ms-1"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="FoodItem.Category" class="form-label"></label>
+                        <label asp-for="FoodItem.Category" class="form-label">Category</label>
                         <select asp-for="FoodItem.Category" class="form-select">
-                            <option value="Snacks">Snacks 🥪</option>
-                            <option value="Beverages">Beverages ☕</option>
-                            <option value="Meals">Meals 🍲</option>
-                            <option value="Desserts">Desserts 🍦</option>
-                            <option value="Combos">Combos 🍱</option>
+                            <option value="Snacks">Snacks</option>
+                            <option value="Beverages">Beverages</option>
+                            <option value="Meals">Meals</option>
+                            <option value="Desserts">Desserts</option>
+                            <option value="Combos">Combos</option>
                         </select>
                         <span asp-validation-for="FoodItem.Category" class="text-danger small ms-1"></span>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="FoodItem.Description" class="form-label"></label>
-                    <textarea asp-for="FoodItem.Description" class="form-control" rows="3" placeholder="Brief description of ingredients, taste, or portion size..."></textarea>
+                    <label asp-for="FoodItem.Description" class="form-label">Description</label>
+                    <textarea asp-for="FoodItem.Description" class="form-control" rows="3" placeholder="Brief description of ingredients, portion size, taste..."></textarea>
                     <span asp-validation-for="FoodItem.Description" class="text-danger small ms-1"></span>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-bold">Food Image</label>
+                    <label class="form-label">Food Image</label>
                     <input type="hidden" asp-for="FoodItem.ImageUrl" />
                     
-                    <div class="card p-3 bg-light border-0 mb-2">
-                        <div>
-                            <label asp-for="ImageFile" class="form-label small text-muted">Upload Image File (JPG, PNG, WebP, GIF, SVG)</label>
-                            <input asp-for="ImageFile" type="file" accept="image/*" class="form-control" id="imageFileInput" onchange="previewSelectedFile(this)" />
-                            <span asp-validation-for="ImageFile" class="text-danger small d-block ms-1"></span>
-                        </div>
+                    <div class="p-3 bg-light rounded-3 border">
+                        <label asp-for="ImageFile" class="form-label small text-muted">Upload Image File (JPG, PNG, WebP)</label>
+                        <input asp-for="ImageFile" type="file" accept="image/*" class="form-control" id="imageFileInput" onchange="previewSelectedFile(this)" />
+                        <span asp-validation-for="ImageFile" class="text-danger small d-block ms-1"></span>
                     </div>
 
                     <!-- Live Image Preview -->
                     <div class="text-center mt-3 p-3 bg-white border rounded-3 d-none" id="previewBox">
-                        <span class="text-muted small d-block mb-2">Live Preview:</span>
+                        <span class="text-muted small d-block mb-2">Selected Image Preview:</span>
                         <div id="previewContent"></div>
                     </div>
                 </div>
 
                 <div class="d-flex align-items-center justify-content-end gap-2 border-top pt-3">
-                    <a asp-page="/Index" class="btn btn-light border px-4">Cancel</a>
+                    <a asp-page="/Index" class="btn btn-light-custom px-4">Cancel</a>
                     <button type="submit" class="btn btn-primary-custom px-4">
-                        <i class="bi bi-check-lg me-1"></i> Save Food Item
+                        <i class="bi bi-check-lg me-1"></i> Save Item
                     </button>
                 </div>
             </form>
@@ -94,7 +92,7 @@
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    previewContent.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" style="max-height: 120px; object-fit: cover;" />`;
+                    previewContent.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" style="max-height: 140px; object-fit: cover;" />`;
                     previewBox.classList.remove('d-none');
                 };
                 reader.readAsDataURL(input.files[0]);
@@ -104,3 +102,4 @@
         }
     </script>
 }
+

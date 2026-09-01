@@ -6,62 +6,30 @@
 
 <!-- Hero Banner -->
 <div class="hero-banner">
-    <div class="row align-items-center">
-        <div class="col-lg-8">
-            <h1 class="hero-title">College Canteen Menu & Reviews</h1>
-            <p class="hero-subtitle">Discover popular food items, leave star ratings, and share your dining feedback with fellow students.</p>
-        </div>
+    <div class="hero-tag">
+        <i class="bi bi-stars"></i> Campus Dining Guide
     </div>
+    <h1 class="hero-title">College Canteen Menu & Reviews</h1>
+    <p class="hero-subtitle">Explore daily canteen specials, check student ratings, and share your feedback on campus food.</p>
 </div>
 
-<!-- Quick Stats Bar -->
-<div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <div class="stat-card">
-            <div class="stat-icon orange">
-                <i class="bi bi-egg-fried"></i>
-            </div>
-            <div>
-                <h3 class="mb-0 fw-bold">@Model.TotalItems</h3>
-                <span class="text-muted small">Canteen Menu Items</span>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="stat-card">
-            <div class="stat-icon amber">
-                <i class="bi bi-star-fill"></i>
-            </div>
-            <div>
-                <h3 class="mb-0 fw-bold">@Model.TotalReviews</h3>
-                <span class="text-muted small">Total Student Reviews</span>
+<!-- Search & Category Filter Section -->
+<div class="search-filter-card">
+    <form method="get" class="row g-3 align-items-center">
+        <div class="col-lg-7 col-md-6">
+            <div class="input-group custom-input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" asp-for="SearchTerm" class="form-control" placeholder="Search samosa, sandwich, cold coffee, thali..." />
+                @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                {
+                    <a asp-page="/Index" asp-route-SelectedCategory="@Model.SelectedCategory" class="btn btn-link text-muted pe-2 text-decoration-none">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                }
             </div>
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="stat-card">
-            <div class="stat-icon blue">
-                <i class="bi bi-award-fill"></i>
-            </div>
-            <div>
-                <h3 class="mb-0 fw-bold">★ @Model.OverallAvgRating <span class="fs-6 fw-normal text-muted">/ 5.0</span></h3>
-                <span class="text-muted small">Campus Satisfaction Rating</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Search & Filter Controls -->
-<div class="custom-card p-3 mb-4">
-    <form method="get" class="row g-2 align-items-center">
-        <div class="col-md-5">
-            <div class="input-group">
-                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                <input type="text" asp-for="SearchTerm" class="form-control border-start-0 ps-0" placeholder="Search samosa, sandwich, coffee..." />
-            </div>
-        </div>
-        <div class="col-md-4">
-            <select asp-for="SelectedCategory" class="form-select">
+        <div class="col-lg-3 col-md-4">
+            <select asp-for="SelectedCategory" class="form-select" onchange="this.form.submit()">
                 <option value="All">All Categories</option>
                 @foreach (var cat in Model.Categories)
                 {
@@ -69,112 +37,116 @@
                 }
             </select>
         </div>
-        <div class="col-md-3 d-flex gap-2">
-            <button type="submit" class="btn btn-primary-custom flex-grow-1">Filter</button>
-            @if (!string.IsNullOrEmpty(Model.SearchTerm) || (!string.IsNullOrEmpty(Model.SelectedCategory) && Model.SelectedCategory != "All"))
-            {
-                <a asp-page="/Index" class="btn btn-light border text-muted">Reset</a>
-            }
+        <div class="col-lg-2 col-md-2 d-grid">
+            <button type="submit" class="btn btn-primary-custom">
+                Search
+            </button>
         </div>
     </form>
 </div>
 
-<!-- Food Menu / Categories Grid -->
-@if (!string.IsNullOrEmpty(Model.SearchTerm) || (!string.IsNullOrEmpty(Model.SelectedCategory) && Model.SelectedCategory != "All"))
+<!-- Category Chips Quick Bar -->
+<div class="category-chips">
+    <a asp-page="/Index" asp-route-SearchTerm="@Model.SearchTerm" asp-route-SelectedCategory="All" 
+       class="chip-item @(string.IsNullOrEmpty(Model.SelectedCategory) || Model.SelectedCategory == "All" ? "active" : "")">
+        <i class="bi bi-grid-fill"></i> All Items
+    </a>
+    @foreach (var cat in Model.Categories)
+    {
+        <a asp-page="/Index" asp-route-SearchTerm="@Model.SearchTerm" asp-route-SelectedCategory="@cat" 
+           class="chip-item @(Model.SelectedCategory == cat ? "active" : "")">
+            @cat
+        </a>
+    }
+</div>
+
+<!-- Food Menu Grid -->
+@if (!Model.FoodItems.Any())
 {
-    @if (!Model.FoodItems.Any())
-    {
-        <div class="custom-card text-center py-5">
-            <div class="display-1 text-muted mb-3">🔍</div>
-            <h4 class="fw-bold">No Food Items Found</h4>
-            <p class="text-muted">Try adjusting your search criteria or add a new canteen food item.</p>
-            <a asp-page="/FoodItems/Create" class="btn btn-primary-custom mt-2">
-                <i class="bi bi-plus-lg me-1"></i> Add First Food Item
-            </a>
-        </div>
-    }
-    else
-    {
-        <div class="row g-4">
-            @foreach (var item in Model.FoodItems)
-            {
-                <div class="col-lg-4 col-md-6">
-                    <div class="food-card">
-                        <div class="food-card-header">
-                            <span class="category-badge">@(string.IsNullOrEmpty(item.Category) ? "Canteen" : item.Category)</span>
-                            <span class="price-tag">₹@item.Price.ToString("0.00")</span>
-                            @if (item.IsImageFileOrUrl)
-                            {
-                                <div class="food-img-container">
-                                    <img src="@item.ImageUrl" alt="@item.Name" class="food-card-img" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<div class=\'food-emoji\'>🍲</div>';" />
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="food-emoji">
-                                    @(string.IsNullOrWhiteSpace(item.ImageUrl) ? "🍲" : item.ImageUrl)
-                                </div>
-                            }
-                        </div>
-                        <div class="food-card-body">
-                            <h3 class="food-title">@item.Name</h3>
-                            <p class="food-desc">@(string.IsNullOrWhiteSpace(item.Description) ? "Freshly prepared at the main canteen counter." : item.Description)</p>
-
-                            <!-- Rating Display -->
-                            <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="rating-pill">★ @item.AverageRating.ToString("0.0")</span>
-                                    <div class="star-rating">
-                                        @for (int i = 1; i <= 5; i++)
-                                        {
-                                            if (i <= Math.Round(item.AverageRating))
-                                            {
-                                                <i class="bi bi-star-fill"></i>
-                                            }
-                                            else
-                                            {
-                                                <i class="bi bi-star star-empty"></i>
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                                <span class="text-muted small">(@item.ReviewCount @(item.ReviewCount == 1 ? "review" : "reviews"))</span>
-                            </div>
-
-                            <!-- Card Action Buttons -->
-                            <div class="d-flex gap-2 mt-3">
-                                <a asp-page="/FoodItems/Details" asp-route-id="@item.Id" class="btn btn-primary-custom btn-sm flex-grow-1 text-center">
-                                    <i class="bi bi-chat-left-text-fill me-1"></i> Reviews & Rate
-                                </a>
-                                <a asp-page="/FoodItems/Edit" asp-route-id="@item.Id" class="btn btn-light border btn-sm text-secondary" title="Edit Item">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </a>
-                                <a asp-page="/FoodItems/Delete" asp-route-id="@item.Id" class="btn btn-light border btn-sm text-danger" title="Delete Item">
-                                    <i class="bi bi-trash-fill"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    }
+    <div class="custom-card text-center py-5">
+        <div class="display-4 text-muted mb-3"><i class="bi bi-search-heart"></i></div>
+        <h4 class="fw-bold mb-2">No Food Items Found</h4>
+        <p class="text-muted mb-4">No menu items match your search or filter selection.</p>
+        <a asp-page="/Index" class="btn btn-light-custom px-4 py-2 me-2">Reset Filters</a>
+        <a asp-page="/FoodItems/Create" class="btn btn-primary-custom px-4 py-2">
+            <i class="bi bi-plus-lg me-1"></i> Add Food Item
+        </a>
+    </div>
 }
 else
 {
-    <!-- Display Categories when no specific search or category is active -->
-    <h3 class="fw-bold mb-4">Browse by Categories</h3>
-    <div class="row g-4 mb-4">
-        @foreach (var cat in Model.Categories)
+    <div class="row g-4">
+        @foreach (var item in Model.FoodItems)
         {
-            <div class="col-lg-3 col-md-4 col-sm-6">
-                <a asp-page="/Index" asp-route-SelectedCategory="@cat" class="text-decoration-none">
-                    <div class="custom-card text-center hover-scale pb-4 pt-4 border category-card bg-light">
-                        <div class="display-4 mb-3">🍽️</div>
-                        <h4 class="fw-bold text-dark mb-0">@cat</h4>
+            <div class="col-lg-4 col-md-6">
+                <div class="food-card">
+                    <div class="food-card-header">
+                        <span class="category-badge">@(string.IsNullOrEmpty(item.Category) ? "Canteen" : item.Category)</span>
+                        <span class="price-tag">₹@item.Price.ToString("0.00")</span>
+                        @if (item.IsImageFileOrUrl)
+                        {
+                            <img src="@item.ImageUrl" alt="@item.Name" class="food-card-img" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                            <div class="food-card-placeholder" style="display: none;">
+                                <i class="bi bi-cup-hot"></i>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="food-card-placeholder">
+                                @if (!string.IsNullOrWhiteSpace(item.ImageUrl) && item.ImageUrl.Length <= 4)
+                                {
+                                    <span>@item.ImageUrl</span>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-cup-hot"></i>
+                                }
+                            </div>
+                        }
                     </div>
-                </a>
+                    <div class="food-card-body">
+                        <h3 class="food-title">@item.Name</h3>
+                        <p class="food-desc">@(string.IsNullOrWhiteSpace(item.Description) ? "Freshly prepared daily at the campus canteen." : item.Description)</p>
+
+                        <!-- Rating & Reviews Bar -->
+                        <div class="d-flex align-items-center justify-content-between pt-3 border-top mt-auto">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="rating-pill">
+                                    <i class="bi bi-star-fill text-warning"></i> @item.AverageRating.ToString("0.0")
+                                </span>
+                                <div class="star-rating">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= Math.Round(item.AverageRating))
+                                        {
+                                            <i class="bi bi-star-fill"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-star star-empty"></i>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <span class="text-muted small fw-medium">@item.ReviewCount @(item.ReviewCount == 1 ? "review" : "reviews")</span>
+                        </div>
+
+                        <!-- Card Action Buttons -->
+                        <div class="d-flex gap-2 mt-3">
+                            <a asp-page="/FoodItems/Details" asp-route-id="@item.Id" class="btn btn-primary-custom btn-sm flex-grow-1 text-center d-flex align-items-center justify-content-center gap-1 py-2">
+                                <i class="bi bi-chat-square-text"></i> Reviews & Rate
+                            </a>
+                            <a asp-page="/FoodItems/Edit" asp-route-id="@item.Id" class="btn btn-light-custom btn-sm text-secondary px-3" title="Edit Item">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a asp-page="/FoodItems/Delete" asp-route-id="@item.Id" class="btn btn-light-custom btn-sm text-danger px-3" title="Delete Item">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         }
     </div>
 }
+
