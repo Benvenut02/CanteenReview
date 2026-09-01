@@ -72,9 +72,8 @@ namespace CanteenReview.Models
         [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5 stars.")]
         public int Rating { get; set; }
 
-        [Required(ErrorMessage = "Please write a brief comment.")]
         [StringLength(1000, ErrorMessage = "Comment cannot exceed 1000 characters.")]
-        public string Comment { get; set; } = string.Empty;
+        public string? Comment { get; set; }
 
         [Display(Name = "Submitted On")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;

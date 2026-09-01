@@ -107,12 +107,6 @@
                     <span asp-validation-for="NewReview.Rating" class="text-danger small ms-1 d-block"></span>
                 </div>
 
-                <div class="mb-4">
-                    <label asp-for="NewReview.Comment" class="form-label"></label>
-                    <textarea asp-for="NewReview.Comment" class="form-control" rows="3" placeholder="How was the taste, freshness, and portion size?"></textarea>
-                    <span asp-validation-for="NewReview.Comment" class="text-danger small ms-1"></span>
-                </div>
-
                 <button type="submit" class="btn btn-primary-custom w-100 py-2">
                     <i class="bi bi-send-fill me-1"></i> Submit Review
                 </button>
@@ -176,7 +170,6 @@
                                 </form>
                             </div>
                         </div>
-                        <p class="mb-0 text-dark ps-5">@review.Comment</p>
                     </div>
                 }
             }
